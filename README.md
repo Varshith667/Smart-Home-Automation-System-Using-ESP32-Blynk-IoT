@@ -327,7 +327,19 @@ char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 
 | Serial Monitor Output | Email Alert Notification |
 |:---:|:---:|
-| ![Serial Monitor](Serial monitor.png) | ![Email Notification](Email alert message.png) |
+|<table>
+<tr>
+<td align="center">
+<b>Serial Monitor Output</b><br>
+<img src="Results/Serial monitor.png" width="300">
+</td>
+
+<td align="center">
+<b>Email Notification</b><br>
+<img src="Results/Email alert message.png" width="300">
+</td>
+</tr>
+</table>
 
 The system successfully:
 - Streams all sensor data (gas, temperature, humidity, flame, motion) to Blynk cloud in real-time
