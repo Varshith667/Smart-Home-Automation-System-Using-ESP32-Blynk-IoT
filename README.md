@@ -298,17 +298,31 @@ char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 
 ## 📊 Dashboard Preview
 
-| Mobile App Dashboard | Web Dashboard |
-|:---:|:---:|
-| ![Mobile Dashboard](/Blynk%20IoT/Mobile%20app%20dashboard.jpeg) | ![Web Dashboard](Web dashboard.png) |
-=======
-| ![Mobile Dashboard](Mobile app dashboard.jpeg) | ![Web Dashboard](Web dashboard.png) |
+<table>
+<tr>
+<td align="center">
+<b>Mobile App Dashboard</b><br>
+<img src="Blynk IoT/Mobile app dashboard.jpeg" width="250">
+</td>
 
-| Datastreams Configuration | Blynk Event Setup |
-|:---:|:---:|
-| ![Datastreams](Datastreams.png) | ![Event Setup](Cloud_Blynk_IoT/Event_Setup.png) |
+<td align="center">
+<b>Web Dashboard</b><br>
+<img src="Blynk IoT/Web dashboard.png" width="250">
+</td>
+</tr>
 
----
+<tr>
+<td align="center">
+<b>Datastreams Configuration</b><br>
+<img src="Blynk IoT/Datastreams.png" width="250">
+</td>
+
+<td align="center">
+<b>Blynk Event Setup</b><br>
+<img src="Cloud_Blynk_IoT/Event_Setup.png" width="250">
+</td>
+</tr>
+</table>
 
 ## 📈 Results
 
