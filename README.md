@@ -357,6 +357,18 @@ Blynk Organization: My organization - 4511RH
 
 ---
 
+<h2 align="center">👨‍💻 Connect With Me</h2>
+
+<p align="center">
+  <a href="https://github.com/Varshith667">
+    <img src="https://img.shields.io/badge/GitHub-Profile-black?logo=github" />
+  </a>
+
+  <a href="https://www.linkedin.com/in/padam-shankara-bala-sai-varshith-1a5405333">
+    <img src="https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin" />
+  </a>
+</p>
+
 <div align="center">
 
 ⭐ **If this project was helpful, consider giving it a star!** ⭐
