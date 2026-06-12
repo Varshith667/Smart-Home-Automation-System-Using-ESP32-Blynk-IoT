@@ -1,4 +1,4 @@
-# 🏠 Smart Home Security System
+# 🏠 Smart Home Automation System Using ESP32 & Blynk IoT
 ### ESP32 + Blynk IoT | Wokwi Simulator
 
 A real-time IoT-based home security system that monitors gas leakage, fire, motion, and temperature/humidity using an ESP32 microcontroller. Alerts and sensor data are sent to the **Blynk IoT app** on your phone.
