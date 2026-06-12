@@ -301,6 +301,8 @@ char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 | Mobile App Dashboard | Web Dashboard |
 |:---:|:---:|
 | ![Mobile Dashboard](/Blynk%20IoT/Mobile%20app%20dashboard.jpeg) | ![Web Dashboard](Web dashboard.png) |
+=======
+| ![Mobile Dashboard](Mobile app dashboard.jpeg) | ![Web Dashboard](Web dashboard.png) |
 
 | Datastreams Configuration | Blynk Event Setup |
 |:---:|:---:|
