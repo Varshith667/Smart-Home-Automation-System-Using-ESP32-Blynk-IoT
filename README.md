@@ -126,7 +126,11 @@ Designed and simulated entirely in **Wokwi**, the project demonstrates a product
 
 The complete circuit was designed and validated in **Wokwi Simulator**.
 
-![Circuit Diagram](Pin diagram.png)
+<h2>🔌 Circuit Diagram</h2>
+
+<p align="center">
+  <img src="02_Circuit_diagram/Pin diagram.png" width="425">
+</p>
 
 The `Diagram.json` file in `Circuit_Diagram/` can be directly imported into [wokwi.com](https://wokwi.com) to reproduce the full interactive simulation.
 
@@ -315,11 +319,6 @@ char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 <td align="center">
 <b>Datastreams Configuration</b><br>
 <img src="Blynk IoT/Datastreams.png" width="250">
-</td>
-
-<td align="center">
-<b>Blynk Event Setup</b><br>
-<img src="Cloud_Blynk_IoT/Event_Setup.png" width="250">
 </td>
 </tr>
 </table>
