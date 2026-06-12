@@ -126,7 +126,7 @@ Designed and simulated entirely in **Wokwi**, the project demonstrates a product
 
 The complete circuit was designed and validated in **Wokwi Simulator**.
 
-![Circuit Diagram](Pin_diagram.png)
+![Circuit Diagram](Pin diagram.png)
 
 The `Diagram.json` file in `Circuit_Diagram/` can be directly imported into [wokwi.com](https://wokwi.com) to reproduce the full interactive simulation.
 
@@ -300,7 +300,7 @@ char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 
 | Mobile App Dashboard | Web Dashboard |
 |:---:|:---:|
-| ![Mobile Dashboard](Mobile_app_dashboard.jpeg) | ![Web Dashboard](Web_dashboard.png) |
+| ![Mobile Dashboard](Mobile app dashboard.jpeg) | ![Web Dashboard](Web dashboard.png) |
 
 | Datastreams Configuration | Blynk Event Setup |
 |:---:|:---:|
@@ -312,7 +312,7 @@ char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 
 | Serial Monitor Output | Email Alert Notification |
 |:---:|:---:|
-| ![Serial Monitor](Serial_monitor.png) | ![Email Notification](Email_alert_message.png) |
+| ![Serial Monitor](Serial monitor.png) | ![Email Notification](Email alert message.png) |
 
 The system successfully:
 - Streams all sensor data (gas, temperature, humidity, flame, motion) to Blynk cloud in real-time
