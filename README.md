@@ -1,302 +1,339 @@
+<div align="center">
+
 # 🏠 Smart Home Automation System
+### ESP32 · Blynk IoT Cloud · Multi-Sensor Real-Time Monitoring
 
-> **Real-time IoT home security using ESP32 + Blynk Cloud**  
-> Monitors gas leakage, fire, motion, and temperature/humidity — sends instant alerts to your phone and email.
+[![Platform](https://img.shields.io/badge/Platform-ESP32-blue?style=for-the-badge&logo=espressif)](https://www.espressif.com/)
+[![Framework](https://img.shields.io/badge/Framework-Arduino-00979D?style=for-the-badge&logo=arduino)](https://www.arduino.cc/)
+[![Cloud](https://img.shields.io/badge/Cloud-Blynk%20IoT-23C48E?style=for-the-badge)](https://blynk.io/)
+[![Simulator](https://img.shields.io/badge/Simulator-Wokwi-FF5722?style=for-the-badge)](https://wokwi.com/)
+[![Language](https://img.shields.io/badge/Language-C%2B%2B-00599C?style=for-the-badge&logo=cplusplus)](https://isocpp.org/)
 
-[![Wokwi Simulation](https://img.shields.io/badge/Wokwi-Simulation-green?logo=arduino)](https://wokwi.com/projects/466557671389500417)
-[![Blynk IoT](https://img.shields.io/badge/Blynk-IoT%20Cloud-blue)](https://blynk.cloud)
-[![Platform](https://img.shields.io/badge/Platform-ESP32-red)](https://www.espressif.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+> A fully cloud-connected IoT security and environment monitoring system that detects motion intrusion, gas leakage, fire, and hazardous temperature in real-time — triggering instant alerts, relay-controlled emergency responses, and live dashboards on both mobile and web.
 
----
-
-## 📸 Project Screenshots
-
-| Wokwi Circuit | Blynk Web Dashboard |
-|:---:|:---:|
-| ![Pin Diagram](screenshots/Pin_diagram.png) | ![Web Dashboard](screenshots/Web_dashboard.png) |
-
-| Mobile App Dashboard | Email Alert |
-|:---:|:---:|
-| ![Mobile App](screenshots/Mobile_app_dashboard.jpeg) | ![Email Alert](screenshots/Email_alert_message.png) |
-
-| Serial Monitor | Blynk Datastreams |
-|:---:|:---:|
-| ![Serial Monitor](screenshots/Serial_monitor.png) | ![Datastreams](screenshots/Datastreams.png) |
-
-> 📁 Place all screenshots inside a `screenshots/` folder in the repo root.
+</div>
 
 ---
 
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
+- [System Architecture](#-system-architecture)
 - [Features](#-features)
-- [Components](#-components)
-- [Circuit Wiring](#-circuit-wiring)
+- [Hardware Components](#-hardware-components)
+- [Pin Configuration](#-pin-configuration)
+- [Circuit Diagram](#-circuit-diagram)
+- [Software Stack](#-software-stack)
 - [Blynk IoT Setup](#-blynk-iot-setup)
-- [Code Setup](#-code-setup)
-- [Running on Wokwi](#-running-on-wokwi)
-- [How It Works](#-how-it-works)
-- [Libraries](#-libraries)
-- [Troubleshooting](#-troubleshooting)
+- [Virtual Pin Mapping](#-virtual-pin-mapping)
+- [Alert Thresholds](#-alert-thresholds)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Dashboard Preview](#-dashboard-preview)
+- [Results](#-results)
+- [Author](#-author)
 
 ---
 
 ## 🔍 Overview
 
-This project is a smart home security system built on an **ESP32** microcontroller that continuously monitors the environment for hazards and intruders. All sensor data is streamed live to the **Blynk IoT cloud**, viewable from both the **web dashboard** and **mobile app**. When a threat is detected, the system:
+The **Smart Home Automation System** is an IoT-based real-time monitoring and automated protection platform built on the **ESP32 microcontroller** and **Blynk IoT Cloud**. The system continuously polls an array of environmental and security sensors, streams live telemetry to the Blynk cloud, and automatically triggers warning events — including email and push notifications and relay-controlled actuators — when hazardous conditions are detected.
 
-- Activates the **relay** (for exhaust fan, sprinkler, or alarm)
-- Sounds the **buzzer**
-- Sends a **push notification + email** via Blynk
+Designed and simulated entirely in **Wokwi**, the project demonstrates a production-ready IoT pipeline covering sensor interfacing, Wi-Fi connectivity, cloud data streaming, event-driven alerting, and hardware actuation — all within a single embedded firmware.
+
+---
+
+## 🏗 System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        SENSOR LAYER                             │
+│  PIR Motion │ Flame Sensor │ MQ2 Gas │ DHT22 Temp/Humidity      │
+└────────────────────────┬────────────────────────────────────────┘
+                         │ GPIO Reads (Digital / Analog)
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     ESP32 FIRMWARE                              │
+│   BlynkTimer (1000ms) → readSensors() → Threshold Check         │
+│       │                                           │             │
+│       ▼                                           ▼             │
+│  Relay / Buzzer Control               Blynk.virtualWrite()      │
+└─────────────────────────────────────────────────────────────────┘
+                         │ Wi-Fi / TCP-IP / HTTP
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    BLYNK IoT CLOUD (BLR1)                       │
+│  Data Streams │ Event Logs │ Email / Push Notifications         │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+          ┌────────────┴────────────┐
+          ▼                         ▼
+  ┌───────────────┐       ┌──────────────────┐
+  │  Mobile App   │       │   Web Dashboard  │
+  │ (Android/iOS) │       │  (Blynk Console) │
+  └───────────────┘       └──────────────────┘
+```
 
 ---
 
 ## ✨ Features
 
-- 🔴 **Gas Leakage Detection** — triggers relay + buzzer when MQ-2 threshold is exceeded
-- 🔥 **Fire/Flame Detection** — activates relay + buzzer on flame detection
-- 🌡️ **Temperature & Humidity Monitoring** — live readings via DHT22 on Blynk gauges
-- 🚨 **Over-Temperature Alert** — relay activates if temperature exceeds 50°C
-- 🚶 **Motion Detection** — PIR sensor sends intrusion alert to Blynk
-- 📧 **Email + Push Notifications** — instant alerts via Blynk event system
-- 📊 **Live Dashboard** — web + mobile dashboard with gauges, LEDs, and value display
-- 🔄 **Auto-reconnect** — syncs all virtual pins on Blynk reconnect
+| Feature | Description |
+|---|---|
+| 🚶 **Motion Detection** | PIR sensor detects intrusion and triggers instant cloud alert |
+| 🔥 **Fire Detection** | Flame sensor monitors for fire; activates relay + buzzer alarm |
+| 💨 **Gas Leakage Detection** | MQ2 analog sensor detects combustible gas above safety threshold |
+| 🌡️ **Temperature Monitoring** | DHT22 tracks ambient temperature with over-temperature alerting |
+| 💧 **Humidity Monitoring** | Real-time humidity readings streamed live to Blynk dashboard |
+| 📲 **Mobile & Web Dashboard** | Live gauges, LED status indicators on Blynk app and web console |
+| 📧 **Cloud Notifications** | Automated email and push alerts on any hazard event via Blynk |
+| ⚡ **Relay Emergency Control** | Automatic relay activation on gas / fire / over-temperature events |
+| 🔔 **Buzzer Alarm** | Audible alarm using `tone()` when any hazard condition is active |
+| 🔄 **Auto-Reconnect Sync** | `BLYNK_CONNECTED()` re-syncs all virtual pins on cloud reconnect |
 
 ---
 
-## 📦 Components
+## 🔧 Hardware Components
 
-| Component | Quantity | Purpose |
-|---|---|---|
-| ESP32 DevKit C v4 | 1 | Main controller + WiFi |
-| DHT22 Sensor | 1 | Temperature & humidity |
-| PIR Motion Sensor | 1 | Intruder / motion detection |
-| MQ-2 Gas Sensor | 1 | LPG / smoke / gas detection |
-| Flame Sensor (IR) | 1 | Fire detection |
-| Relay Module | 1 | Controls external device (fan/alarm) |
-| Buzzer | 1 | Audio alert |
-
----
-
-## 🔌 Circuit Wiring
-
-### GPIO Pin Assignments
-
-| Component | ESP32 Pin | Wire Color | Signal Type |
+| Component | Model | Quantity | Purpose |
 |---|---|---|---|
-| DHT22 — DATA | GPIO 27 | Green | Digital |
-| DHT22 — VCC | 3.3V | Red | Power |
-| DHT22 — GND | GND | Black | Ground |
-| PIR — OUT | GPIO 15 | Green | Digital |
-| PIR — VCC | 3.3V | Red | Power |
-| PIR — GND | GND | Black | Ground |
-| Flame Sensor — DAT | GPIO 4 | Green | Digital |
-| Flame Sensor — VCC | 3.3V | Red | Power |
-| Flame Sensor — GND | GND | Black | Ground |
-| MQ-2 Gas — AOUT | GPIO 34 | Green | Analog |
-| MQ-2 Gas — VCC | 5V | Red | Power |
-| MQ-2 Gas — GND | GND | Black | Ground |
-| Relay — IN | GPIO 2 | Green | Digital |
-| Relay — VCC | 5V | Red | Power |
-| Relay — GND | GND | Black | Ground |
-| Buzzer — (+) | GPIO 14 | Green | PWM |
-| Buzzer — (−) | GND | Black | Ground |
-
-> ⚠️ **Note:** GPIO 34 is input-only on ESP32 — ideal for analog reads. MQ-2 and Relay require **5V**, not 3.3V.
-
-### Wokwi `diagram.json`
-
-The `diagram.json` file in this repo contains the complete Wokwi circuit. Open the project directly at:  
-👉 **https://wokwi.com/projects/466557671389500417**
+| Microcontroller | ESP32 DevKit C V4 | 1 | Main processing unit + Wi-Fi |
+| Temperature & Humidity | DHT22 (AM2302) | 1 | Ambient environment sensing |
+| Gas Sensor | MQ2 | 1 | Combustible gas detection (analog) |
+| Motion Sensor | PIR (HC-SR501) | 1 | Intrusion / presence detection |
+| Flame Sensor | IR Flame Module | 1 | Fire / open-flame detection |
+| Relay Module | 5V Single Channel | 1 | Emergency load switching |
+| Active Buzzer | — | 1 | Audible hazard alarm |
 
 ---
 
-## 📱 Blynk IoT Setup
+## 📌 Pin Configuration
 
-### Step 1 — Sign Up
-Create a free account at [https://blynk.cloud](https://blynk.cloud).
+| Sensor / Actuator | ESP32 GPIO | Signal Type |
+|---|---|---|
+| PIR Motion Sensor | GPIO 15 | Digital INPUT |
+| Flame Sensor | GPIO 4 | Digital INPUT |
+| MQ2 Gas Sensor | GPIO 34 | Analog INPUT (ADC1) |
+| DHT22 Data | GPIO 27 | Single-Wire (DHTesp) |
+| Relay Module | GPIO 2 | Digital OUTPUT |
+| Active Buzzer | GPIO 14 | PWM OUTPUT (`tone()`) |
 
-### Step 2 — Create a Template
-1. Click **"Developer Zone" → "+ New Template"**
-2. Name: `Smart Home Automation`
-3. Hardware: `ESP32`, Connection: `WiFi`
-4. Click **Save**
+> **Note:** GPIO 34 is input-only on the ESP32 — no internal pull-up/down. Ideal for analog reads from MQ2. The MQ2 and Relay module both require **5V** power, not 3.3V.
 
-### Step 3 — Add Datastreams
-Go to the **Datastreams** tab and add these 6 virtual pins exactly:
+---
 
-| Virtual Pin | Name | Data Type | Min | Max | Default |
-|---|---|---|---|---|---|
-| V1 | Gas Sensor | Integer | 0 | 1 | 0 |
-| V3 | Flame Sensor | Integer | 0 | 1 | 0 |
-| V4 | Motion Sensor | Integer | 0 | 1 | 0 |
-| V5 | Temperature | Double | -40 | 80 | 0 |
-| V6 | Humidity | Double | 0 | 100 | 0 |
-| V7 | Relay Status | Integer | 0 | 1 | 0 |
+## 🔌 Circuit Diagram
 
-### Step 4 — Create the Event (for alerts)
-1. Go to **Events & Notifications** tab
-2. Click **"+ Add New Event"**
-3. Fill in:
-   - **Event Code:** `warning_message` ← must be exactly this
-   - **Event Name:** Warning Message
-   - **Type:** Warning
-4. Enable **"Send Email Notification"** ✅
-5. Enable **"Push Notification"** ✅ (for mobile app alerts)
-6. Click **Save**
+The complete circuit was designed and validated in **Wokwi Simulator**.
 
-> This is the event fired in code as: `Blynk.logEvent("warning_message", "Gas Leakage Detected!")`
+![Circuit Diagram](Circuit_Diagram/Circuit_Diagram.png)
 
-### Step 5 — Build the Dashboard
+The `Diagram.json` file in `Circuit_Diagram/` can be directly imported into [wokwi.com](https://wokwi.com) to reproduce the full interactive simulation.
 
-**Web Dashboard** — add these widgets:
-- 4× **LED widgets** → V1 (Gas), V3 (Flame), V4 (Motion), V7 (Relay)
-- 2× **Gauge widgets** → V5 (Temperature, range -40 to 80), V6 (Humidity, range 0 to 100)
-- 1× **Gauge widget** → V1 (Gas status, range 0 to 1)
-- 1× **Value Display** → V5 (Temperature label)
+🔗 **Live Simulation:** [https://wokwi.com/projects/466557671389500417](https://wokwi.com/projects/466557671389500417)
 
-**Mobile App Dashboard** — same layout, works identically from the Blynk app.
+---
 
-### Step 6 — Create a Device
-1. Go to **Devices → "+ New Device" → "From Template"**
-2. Select your template
-3. Copy all 3 credentials:
+## 🖥 Software Stack
+
+| Layer | Technology |
+|---|---|
+| Firmware Language | C++ (Arduino Framework) |
+| IDE | Arduino IDE |
+| Simulation | Wokwi Online Simulator |
+| IoT Cloud | Blynk IoT (Template-based, Region: BLR1) |
+| Communication | Wi-Fi → TCP/IP → HTTP (Blynk protocol) |
+| Version Control | Git / GitHub |
+
+### Arduino Libraries
 
 ```cpp
-#define BLYNK_TEMPLATE_ID   "TMPLxxxxxxxx"
-#define BLYNK_TEMPLATE_NAME "Smart Home Automation"
-#define BLYNK_AUTH_TOKEN    "xxxxxxxxxxxxxxxxxxxxxx"
+#include <WiFi.h>              // ESP32 Wi-Fi driver
+#include <WiFiClient.h>        // TCP client for Blynk
+#include <BlynkSimpleEsp32.h>  // Blynk IoT cloud library
+#include "DHTesp.h"            // DHT22 temperature/humidity driver
 ```
 
 ---
 
-## 💻 Code Setup
+## ☁️ Blynk IoT Setup
 
-### 1. Install Arduino Libraries
+### Step 1 — Create Account & Template
+1. Sign up at [blynk.cloud](https://blynk.cloud)
+2. Go to **Developer Zone → "+ New Template"**
+3. Name: `Smart Home Automation` | Hardware: `ESP32` | Connection: `WiFi`
+4. Save and note your `BLYNK_TEMPLATE_ID` and `BLYNK_TEMPLATE_NAME`
 
-In Arduino IDE go to **Sketch → Include Library → Manage Libraries** and install:
+### Step 2 — Add Data Streams
+In the **Datastreams** tab, create 6 virtual pins (see table in next section).
 
-| Library | Search Name |
+### Step 3 — Create the Warning Event
+1. Go to **Events & Notifications → "+ Add New Event"**
+2. Set **Event Code** to exactly: `warning_message`
+3. Enable ✅ **Send Email Notification** and ✅ **Push Notification**
+4. Save — this is what fires `Blynk.logEvent("warning_message", "...")` in the firmware
+
+### Step 4 — Build Dashboards
+Add widgets to the **Web Dashboard** and **Mobile App Dashboard**:
+- **LED widgets** → V1 (Gas), V3 (Flame), V4 (Motion), V7 (Relay)
+- **Gauge widgets** → V5 (Temperature, −40 to 80), V6 (Humidity, 0 to 100)
+- **Gauge widget** → V1 (Gas Status, 0 to 1)
+- **Value Display** → V5 (Temperature label)
+
+### Step 5 — Create a Device
+Go to **Devices → "+ New Device" → From Template** → copy your `BLYNK_AUTH_TOKEN`
+
+---
+
+## 🗂 Virtual Pin Mapping
+
+| Virtual Pin | Sensor / Actuator | Data Type | Range | Widget |
+|---|---|---|---|---|
+| V1 | MQ2 Gas Sensor | Integer | 0 – 1 | Gauge / LED |
+| V3 | Flame Sensor | Integer | 0 – 1 | LED |
+| V4 | PIR Motion Sensor | Integer | 0 – 1 | LED |
+| V5 | DHT22 Temperature | Double | −40 – 80 | Gauge |
+| V6 | DHT22 Humidity | Double | 0 – 100 | Gauge |
+| V7 | Relay Status | Integer | 0 – 1 | LED / Button |
+
+---
+
+## ⚠️ Alert Thresholds
+
+| Hazard | Condition | Action |
+|---|---|---|
+| Gas Leakage | Mapped ADC value > **165** (raw ~3628) | `logEvent` + Relay ON + Buzzer 1000 Hz |
+| Over-Temperature | Temperature ≥ **50 °C** | `logEvent` + Relay ON |
+| Motion Intrusion | PIR = **HIGH** | `logEvent` — alert sent on state change only |
+| Fire Detected | Flame Sensor = **HIGH** | `logEvent` + Relay ON + Buzzer 550 Hz |
+
+State-change tracking (`pirState`) prevents repeated cloud event spam on continuous PIR HIGH readings. Gas and flame loops hold the relay/buzzer active until the hazard condition clears.
+
+---
+
+## 📁 Project Structure
+
+```
+Smart_Home_Automation/
+│
+├── 01_Code/
+│   └── Smart_Home_Automation/
+│       └── Smart_Home_Automation.ino        # Main firmware
+│
+├── Circuit_Diagram/
+│   ├── Circuit_Diagram.png                  # Visual schematic (Wokwi)
+│   └── Diagram.json                         # Wokwi-importable circuit file
+│
+├── Cloud_Blynk_IoT/
+│   ├── Mobile_App_Dashboard.jpeg            # Mobile app screenshot
+│   ├── Web_Dashboard.png                    # Web console screenshot
+│   ├── Datastreams_Setup.png                # Virtual pin data stream config
+│   └── Event_Setup.png                      # Blynk event configuration
+│
+├── Results/
+│   ├── Serial_Monitor_Output.png            # Live serial monitor output
+│   └── Email_Alert_Notification.png         # Email alert sample
+│
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Arduino IDE](https://www.arduino.cc/en/software) (v2.x recommended)
+- ESP32 board package via Boards Manager:
+  ```
+  https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+  ```
+- Blynk account at [blynk.cloud](https://blynk.cloud)
+
+### Library Installation
+
+Open Arduino IDE → **Tools → Manage Libraries** and install:
+
+| Library | Author |
 |---|---|
-| Blynk | `Blynk` |
-| DHT sensor for ESPx | `DHT sensor library for ESPx` |
+| `Blynk` | Volodymyr Shymanskyy |
+| `DHT sensor library for ESPx` | beegee-tokyo |
 
-Or if using Wokwi, add this to `libraries.txt`:
-```
-DHT sensor library for ESPx
-Blynk
-```
+### Configuration
 
-### 2. Update Credentials in Code
-
-Open `smart_home_security.ino` and replace the placeholders at the top:
+Open `Smart_Home_Automation.ino` and update your credentials:
 
 ```cpp
 #define BLYNK_TEMPLATE_ID   "YOUR_TEMPLATE_ID"
 #define BLYNK_TEMPLATE_NAME "Smart Home Automation"
 #define BLYNK_AUTH_TOKEN    "YOUR_AUTH_TOKEN"
 
-char ssid[] = "Wokwi-GUEST";  // For Wokwi simulator
-char pass[] = "";              // No password needed in Wokwi
+char ssid[] = "YOUR_WIFI_SSID";    // Use "Wokwi-GUEST" for Wokwi simulator
+char pass[] = "YOUR_WIFI_PASSWORD"; // Leave "" for Wokwi
 ```
 
-For a real ESP32 on your home WiFi, replace `ssid` and `pass` with your network credentials.
+> ⚠️ **Security:** Never commit real credentials to a public repository. Use `secrets.h` or environment variables for production deployments.
+
+### Upload & Run
+
+1. Connect ESP32 via USB
+2. Select **Board:** `ESP32 Dev Module` and the correct **Port**
+3. Click **Upload** (`Ctrl + U`)
+4. Open **Serial Monitor** at `115200 baud` to observe live sensor readings
+5. Open Blynk mobile app or web console to view the live dashboard
+
+### Simulate in Wokwi
+
+1. Open the live project: [wokwi.com/projects/466557671389500417](https://wokwi.com/projects/466557671389500417)  
+   — OR — go to [wokwi.com](https://wokwi.com) → **New Project → ESP32** → import `Diagram.json`
+2. Paste firmware into `sketch.ino` and update Blynk credentials
+3. Click ▶ **Start Simulation**
+4. Interact with sensors:
+   - **DHT22** — click sensor → adjust temperature/humidity slider
+   - **PIR** — click sensor dome to toggle motion HIGH/LOW
+   - **MQ2 Gas** — click sensor → drag the gas concentration slider up
+   - **Flame Sensor** — click sensor → toggle flame state
 
 ---
 
-## 🧪 Running on Wokwi
+## 📊 Dashboard Preview
 
-1. Open the project: **https://wokwi.com/projects/466557671389500417**
-2. Click the code editor and paste your updated `smart_home_security.ino`
-3. Replace the Blynk credentials with your own
-4. Click **▶ Play** to start simulation
-5. Open your Blynk dashboard — data streams in live
+| Mobile App Dashboard | Web Dashboard |
+|:---:|:---:|
+| ![Mobile Dashboard](Cloud_Blynk_IoT/Mobile_App_Dashboard.jpeg) | ![Web Dashboard](Cloud_Blynk_IoT/Web_Dashboard.png) |
 
-**To trigger sensor events in Wokwi:**
-- **DHT22** — click the sensor → adjust the temperature/humidity slider
-- **PIR** — click the PIR sensor dome to toggle motion detection
-- **Gas Sensor** — click the sensor → drag the "Gas" slider up
-- **Flame Sensor** — click the sensor → toggle the flame state
+| Datastreams Configuration | Blynk Event Setup |
+|:---:|:---:|
+| ![Datastreams](Cloud_Blynk_IoT/Datastreams_Setup.png) | ![Event Setup](Cloud_Blynk_IoT/Event_Setup.png) |
 
 ---
 
-## ⚙️ How It Works
+## 📈 Results
 
-### Alert Logic Summary
+| Serial Monitor Output | Email Alert Notification |
+|:---:|:---:|
+| ![Serial Monitor](Results/Serial_Monitor_Output.png) | ![Email Notification](Results/Email_Alert_Notification.png) |
 
-| Trigger | Condition | Action |
-|---|---|---|
-| Gas Leakage | `gas_output_value > 165` | Relay ON + Buzzer 1000Hz + Blynk alert |
-| Flame Detected | `digitalRead(flame_pin) == HIGH` | Relay ON + Buzzer 550Hz + Blynk alert |
-| Over Temperature | `temperature >= 50°C` | Relay ON + Blynk alert |
-| Motion Detected | `digitalRead(PIR) == HIGH` | Blynk notification only |
-
-All alerts use `Blynk.logEvent("warning_message", "...")` which triggers an **email** (from robot@blynk.cloud) and a **push notification** on the mobile app.
-
-### Virtual Pin Flow
-
-```
-Sensor Reading  →  ESP32 GPIO  →  Blynk.virtualWrite(Vx)  →  Dashboard Widget
-                                       ↓
-                              Blynk.logEvent()  →  Email + Push Notification
-```
-
----
-
-## 📚 Libraries
-
-```
-DHT sensor library for ESPx  →  https://github.com/beegee-tokyo/DHTesp
-Blynk                         →  https://github.com/blynkkk/blynk-library
-WiFi, WiFiClient               →  Built into ESP32 Arduino core
-```
-
----
-
-## 🐛 Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| Blynk not connecting | Verify all 3 credentials: Template ID, Template Name, Auth Token |
-| WiFi not connecting in Wokwi | Use `"Wokwi-GUEST"` with empty password — do not change |
-| No email alerts | Ensure the event code is exactly `warning_message` (case-sensitive) |
-| DHT22 shows `nan` | Check GPIO 27 wiring; DHTesp library must be used (not standard DHT) |
-| Gas always triggering | Lower the threshold from `165` in code, or calibrate MQ-2 warmup |
-| Relay not switching | Confirm relay is on 5V, not 3.3V |
-| Push notifications missing | Enable notifications in Blynk app settings for your device |
-
----
-
-## 📁 Repository Structure
-
-```
-smart-home-automation/
-├── smart_home_security.ino    ← Main Arduino source code
-├── diagram.json               ← Wokwi circuit diagram
-├── libraries.txt              ← Wokwi library list
-├── wokwi-project.txt          ← Wokwi project link
-├── README.md                  ← This file
-└── screenshots/
-    ├── Pin_diagram.png
-    ├── Web_dashboard.png
-    ├── Mobile_app_dashboard.jpeg
-    ├── Email_alert_message.png
-    ├── Serial_monitor.png
-    └── Datastreams.png
-```
+The system successfully:
+- Streams all sensor data (gas, temperature, humidity, flame, motion) to Blynk cloud in real-time
+- Triggers instant cloud events on threshold violations with one-shot state-change logic
+- Delivers automated email warnings from `robot@blynk.cloud` for gas, fire, motion, and temperature hazards
+- Activates relay and buzzer in real-time, holding them active until the hazard condition clears
 
 ---
 
 ## 👤 Author
 
-**Padam Shankara Bala Sai Varshith** 
-B.Tech - Electronics and Communication Engineering
-Project: Smart Home Automation  
-Blynk Organization: My organization - 4511RH  
-Simulated & tested on [Wokwi](https://wokwi.com) with [Blynk IoT Cloud](https://blynk.cloud)
+**Padam Shankara Bala Sai Varshith**  
+Smart Home Automation — IoT Mini Project  
+Blynk Organization: My organization - 4511RH
 
-## 📄 License
+---
 
-This project is open source under the [MIT License](LICENSE).
+<div align="center">
+
+⭐ **If this project was helpful, consider giving it a star!** ⭐
+
+*Built with ESP32 + Blynk IoT | Simulated on Wokwi*
+
+</div>
